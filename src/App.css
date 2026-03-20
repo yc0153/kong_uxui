@@ -1629,6 +1629,18 @@ input {
   gap: 18px;
 }
 
+.modern-todo-guide-button {
+  height: 28px;
+  padding: 0 10px;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .modern-todo-theme-toggle {
   height: 28px;
   padding: 0 10px;
@@ -1709,6 +1721,117 @@ input {
   display: grid;
   grid-template-columns: 300px minmax(0, 1fr) 352px;
   min-height: 0;
+}
+
+.coach-target-sidebar,
+.coach-target-composer,
+.coach-target-detail,
+.coach-target-calendar {
+  position: relative;
+}
+
+.coach-target-active {
+  z-index: 6;
+  box-shadow: 0 0 0 9999px rgba(9, 16, 27, 0.48);
+  border-radius: 18px;
+}
+
+.coach-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  pointer-events: none;
+}
+
+.coach-bubble {
+  position: absolute;
+  width: 290px;
+  padding: 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(76, 107, 152, 0.18);
+  box-shadow: 0 18px 40px rgba(15, 29, 47, 0.24);
+  pointer-events: auto;
+}
+
+.modern-todo.dark .coach-bubble {
+  background: rgba(34, 42, 54, 0.96);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #ecf2f8;
+}
+
+.coach-bubble.sidebar {
+  left: 324px;
+  top: 108px;
+}
+
+.coach-bubble.composer {
+  left: 420px;
+  top: 118px;
+}
+
+.coach-bubble.detail {
+  right: 368px;
+  top: 118px;
+}
+
+.coach-bubble.calendar {
+  left: 470px;
+  top: 92px;
+}
+
+.coach-step-count {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 12px;
+  color: #5d7291;
+}
+
+.modern-todo.dark .coach-step-count {
+  color: #a9bbcf;
+}
+
+.coach-bubble strong {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 18px;
+}
+
+.coach-bubble p {
+  margin: 0;
+  color: #516476;
+  line-height: 1.5;
+}
+
+.modern-todo.dark .coach-bubble p {
+  color: #c7d5e2;
+}
+
+.coach-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.coach-actions button {
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(82, 112, 154, 0.16);
+  border-radius: 10px;
+  background: #f3f7fc;
+  color: #34506d;
+  cursor: pointer;
+}
+
+.coach-actions button:last-child {
+  background: #4a74e2;
+  color: #fff;
+}
+
+.coach-actions button:disabled {
+  opacity: 0.45;
+  cursor: default;
 }
 
 .modern-todo-sidebar,

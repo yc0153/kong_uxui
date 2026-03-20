@@ -7,6 +7,36 @@ const TIME_OPTIONS = Array.from({ length: 96 }, (_, index) => {
 })
 
 const WEEKDAY_OPTIONS = ['월', '화', '수', '목', '금', '토', '일']
+const COACH_STEPS = [
+  {
+    id: 'sidebar',
+    title: '1. 왼쪽 탐색',
+    body: '내 하루, 중요, 계획됨으로 작업을 빠르게 필터링하고 진행률을 한눈에 볼 수 있습니다.',
+    targetClass: 'coach-target-sidebar',
+    bubbleClass: 'sidebar',
+  },
+  {
+    id: 'composer',
+    title: '2. 빠른 작업 추가',
+    body: '제목을 입력하고 우선순위를 고른 뒤 바로 추가할 수 있어 처음 쓰는 사람도 흐름을 이해하기 쉽습니다.',
+    targetClass: 'coach-target-composer',
+    bubbleClass: 'composer',
+  },
+  {
+    id: 'detail',
+    title: '3. 상세 패널',
+    body: '선택한 작업의 알림, 기한, 반복, 카테고리, 메모를 오른쪽에서 바로 수정할 수 있습니다.',
+    targetClass: 'coach-target-detail',
+    bubbleClass: 'detail',
+  },
+  {
+    id: 'calendar',
+    title: '4. 캘린더 보기',
+    body: '목록과 캘린더를 전환해 같은 작업을 다른 방식으로 확인할 수 있습니다.',
+    targetClass: 'coach-target-calendar',
+    bubbleClass: 'calendar',
+  },
+]
 
 function ModernTodoWindow({
   state,
@@ -30,6 +60,8 @@ function ModernTodoWindow({
   const [boardMode, setBoardMode] = useState('list')
   const [calendarMonth, setCalendarMonth] = useState(selectedTask?.dueDate ?? getTodayIso())
   const [draftValues, setDraftValues] = useState(getDefaultDraft())
+  const [coachStepIndex, setCoachStepIndex] = useState(0)
+  const [coachVisible, setCoachVisible] = useState(true)
 
   const smartLists = [
     { id: 'myDay', label: '내 하루', count: state.tasks.filter((task) => task.myDay).length },
@@ -134,6 +166,7 @@ function ModernTodoWindow({
   }
 
   const selectedMonthIso = selectedTask?.dueDate || getTodayIso()
+  const currentCoachStep = COACH_STEPS[coachStepIndex]
 
   return (
     <div className={`modern-todo ${state.theme === 'dark' ? 'dark' : 'light'}`}>
@@ -149,6 +182,16 @@ function ModernTodoWindow({
         </label>
 
         <div className="modern-todo-top-actions">
+          <button
+            type="button"
+            className="modern-todo-guide-button"
+            onClick={() => {
+              setCoachVisible(true)
+              setCoachStepIndex(0)
+            }}
+          >
+            Guide
+          </button>
           <button type="button" className="modern-todo-theme-toggle" onClick={onToggleTheme}>
             {state.theme === 'dark' ? 'Light' : 'Dark'}
           </button>
@@ -160,7 +203,9 @@ function ModernTodoWindow({
       </header>
 
       <div className="modern-todo-layout">
-        <aside className="modern-todo-sidebar">
+        <aside
+          className={`modern-todo-sidebar ${coachVisible && currentCoachStep?.targetClass === 'coach-target-sidebar' ? 'coach-target-active coach-target-sidebar' : 'coach-target-sidebar'}`}
+        >
           <button type="button" className="modern-todo-sidebar-toggle" aria-label="사이드바 축소" />
 
           <nav className="modern-todo-nav">
@@ -211,7 +256,13 @@ function ModernTodoWindow({
           </div>
         </aside>
 
-        <section className={`modern-todo-board ${boardMode === 'calendar' ? 'calendar-mode' : ''}`}>
+        <section
+          className={`modern-todo-board ${boardMode === 'calendar' ? 'calendar-mode' : ''} ${
+            coachVisible && currentCoachStep?.targetClass === 'coach-target-calendar'
+              ? 'coach-target-active coach-target-calendar'
+              : 'coach-target-calendar'
+          }`}
+        >
           <div className="modern-todo-board-toolbar">
             <div className="modern-todo-view-controls" aria-hidden="true">
               <span />
@@ -231,7 +282,13 @@ function ModernTodoWindow({
 
           {boardMode === 'list' ? (
             <>
-              <div className="modern-todo-add-card">
+              <div
+                className={`modern-todo-add-card ${
+                  coachVisible && currentCoachStep?.targetClass === 'coach-target-composer'
+                    ? 'coach-target-active coach-target-composer'
+                    : 'coach-target-composer'
+                }`}
+              >
                 <div className="modern-todo-add-row">
                   <span className="modern-todo-add-plus" aria-hidden="true">
                     +
@@ -349,7 +406,13 @@ function ModernTodoWindow({
           )}
         </section>
 
-        <aside className="modern-todo-detail">
+        <aside
+          className={`modern-todo-detail ${
+            coachVisible && currentCoachStep?.targetClass === 'coach-target-detail'
+              ? 'coach-target-active coach-target-detail'
+              : 'coach-target-detail'
+          }`}
+        >
           {selectedTask ? (
             <>
               <header className="modern-todo-detail-header">
@@ -622,6 +685,46 @@ function ModernTodoWindow({
           )}
         </aside>
       </div>
+
+      {coachVisible ? (
+        <div className="coach-overlay" role="presentation">
+          <div className={`coach-bubble ${currentCoachStep.bubbleClass}`}>
+            <span className="coach-step-count">
+              {coachStepIndex + 1} / {COACH_STEPS.length}
+            </span>
+            <strong>{currentCoachStep.title}</strong>
+            <p>{currentCoachStep.body}</p>
+            <div className="coach-actions">
+              <button
+                type="button"
+                onClick={() => setCoachVisible(false)}
+              >
+                닫기
+              </button>
+              <button
+                type="button"
+                onClick={() => setCoachStepIndex((current) => Math.max(0, current - 1))}
+                disabled={coachStepIndex === 0}
+              >
+                이전
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (coachStepIndex === COACH_STEPS.length - 1) {
+                    setCoachVisible(false)
+                    return
+                  }
+
+                  setCoachStepIndex((current) => current + 1)
+                }}
+              >
+                {coachStepIndex === COACH_STEPS.length - 1 ? '완료' : '다음'}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }
